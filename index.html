@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Login Aman - Supabase</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #6a11cb, #2575fc);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .card {
+      background: rgba(255,255,255,0.12);
+      padding: 30px;
+      border-radius: 20px;
+      text-align: center;
+      width: 320px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+    }
+
+    h2 {
+      margin-bottom: 15px;
+      font-size: 26px;
+    }
+
+    input {
+      width: 90%;
+      margin: 8px 0;
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      outline: none;
+    }
+
+    button {
+      margin: 8px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 6px;
+      background: white;
+      color: #2575fc;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #2575fc;
+      color: white;
+    }
+
+    .tabs {
+      display: flex;
+      justify-content: space-around;
+      margin-bottom: 15px;
+    }
+
+    .tabs button {
+      background: none;
+      color: white;
+      font-weight: normal;
+      border-bottom: 2px solid transparent;
+    }
+
+    .tabs button.active {
+      border-color: white;
+      font-weight: bold;
+    }
+
+    .message {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Sistem Login Aman</h2>
+    
+    <div class="tabs">
+      <button id="tabLogin" class="active" onclick="showTab('login')">Login</button>
+      <button id="tabRegister" onclick="showTab('register')">Register</button>
+    </div>
+
+    <!-- LOGIN FORM -->
+    <div id="loginForm">
+      <input type="email" id="logEmail" placeholder="Email"><br>
+      <input type="password" id="logPass" placeholder="Password"><br>
+      <button onclick="login()">Masuk</button>
+    </div>
+
+    <!-- REGISTER FORM -->
+    <div id="registerForm" style="display:none;">
+      <input type="email" id="regEmail" placeholder="Email Baru"><br>
+      <input type="password" id="regPass" placeholder="Password Baru"><br>
+      <button onclick="register()">Daftar</button>
+    </div>
+
+    <button onclick="logout()" style="margin-top:10px;">Logout</button>
+
+    <div class="message" id="message"></div>
+  </div>
+
+  <script>
+    const { createClient } = supabase;
+    const supabaseUrl = "https://qtzgizavzvpycfriitxz.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0emdpemF2enZweWNmcmlpdHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI0MzYxNDAsImV4cCI6MjA3ODAxMjE0MH0.5ZCieOi8W0Qa-wetqRAAcJI382-bD_HITOclUAUe4xY";
+    const client = createClient(supabaseUrl, supabaseKey);
+    const msg = document.getElementById("message");
+
+    function showTab(tab) {
+      document.getElementById("loginForm").style.display = (tab === "login") ? "block" : "none";
+      document.getElementById("registerForm").style.display = (tab === "register") ? "block" : "none";
+      document.getElementById("tabLogin").classList.toggle("active", tab === "login");
+      document.getElementById("tabRegister").classList.toggle("active", tab === "register");
+      msg.innerText = "";
+    }
+
+    async function register() {
+      const email = document.getElementById("regEmail").value;
+      const pass = document.getElementById("regPass").value;
+      const { error } = await client.auth.signUp({ email, password: pass });
+      msg.style.color = error ? "red" : "#00ffcc";
+      msg.innerText = error ? error.message : "Registrasi berhasil!";
+    }
+
+    async function login() {
+      const email = document.getElementById("logEmail").value;
+      const pass = document.getElementById("logPass").value;
+      const { error } = await client.auth.signInWithPassword({ email, password: pass });
+      msg.style.color = error ? "red" : "#00ffcc";
+      msg.innerText = error ? error.message : "Login berhasil!";
+    }
+
+    async function logout() {
+      await client.auth.signOut();
+      msg.style.color = "gray";
+      msg.innerText = "Kamu telah logout.";
+    }
+  </script>
+</body>
+</html>

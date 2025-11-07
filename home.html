@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <title>Home - Sistem Login Aman</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      background: linear-gradient(135deg, #764ba2, #667eea);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .card {
+      background: rgba(255,255,255,0.12);
+      padding: 40px;
+      border-radius: 20px;
+      text-align: center;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      backdrop-filter: blur(8px);
+      min-width: 320px;
+    }
+    button {
+      margin: 10px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: white;
+      color: #764ba2;
+      font-weight: bold;
+      cursor: pointer;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #764ba2;
+      color: white;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>Selamat Datang 👋</h1>
+    <p id="userEmail">Memuat email...</p>
+    <button onclick="logout()">Logout</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script>
+    const { createClient } = supabase;
+    const SUPABASE_URL = "https://qtzgizavzvpycfriitxz.supabase.co";
+    const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF0emdpemF2enZweWNmcmlpdHh6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjI0MzYxNDAsImV4cCI6MjA3ODAxMjE0MH0.5ZCieOi8W0Qa-wetqRAAcJI382-bD_HITOclUAUe4xY";
+    const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    // cek sesi login
+    checkSession();
+    async function checkSession() {
+      const { data } = await supabase.auth.getSession();
+      if (data.session) {
+        document.getElementById("userEmail").innerText = "Email: " + data.session.user.email;
+      } else {
+        window.location.href = "index.html"; // kalau belum login
+      }
+    }
+
+    async function logout() {
+      await supabase.auth.signOut();
+      alert("Logout berhasil!");
+      window.location.href = "index.html";
+    }
+  </script>
+</body>
+</html>
